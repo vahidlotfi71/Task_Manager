@@ -4,11 +4,12 @@ import (
 	"errors"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/vahidlotfi71/Task_Manager/Models"
+	"github.com/vahidlotfi71/Task_Manager/Utils"
+	Utis "github.com/vahidlotfi71/Task_Manager/Utils"
 	"gorm.io/gorm"
 )
-
-/* ---------- DTOها (type-safe) ---------- */
 
 type TaskCreateDTO struct {
 	Title       string
@@ -24,19 +25,29 @@ type TaskUpdateDTO struct {
 	Assignee    string
 }
 
+func Paginate(tx *gorm.DB, c *gin.Context) (tasks []Models.Task, meta Utils.PaginationMetadata, err error) {
+	if tx.Statement.Table == "" {
+		tx = tx.Model(&Models.Task{})
+	}
+	tx, meta = Utis.Paginate(tx, c)
+	err = tx.Find(&tasks).Error
+	return
+}
 func FindByID(tx *gorm.DB, id int64) (task Models.Task, err error) {
 	err = tx.Where("deleted_at IS NULL").First(&task, id).Error
 	return
 }
 
-func FindByStatus(tx *gorm.DB, status Models.TaskStatus) (tasks []Models.Task, err error) {
+func FindByStatus(tx *gorm.DB, status Models.TaskStatus, c *gin.Context) (tasks []Models.Task, meta Utils.PaginationMetadata, err error) {
 	tx = tx.Model(&Models.Task{}).Where("status = ?", status)
+	tx, meta = Utils.Paginate(tx, c)
 	err = tx.Find(&tasks).Error
 	return
 }
 
-func FindByAssignee(tx *gorm.DB, assignee string) (tasks []Models.Task, err error) {
+func FindByAssignee(tx *gorm.DB, assignee string, c *gin.Context) (tasks []Models.Task, meta Utils.PaginationMetadata, err error) {
 	tx = tx.Model(&Models.Task{}).Where("assignee = ?", assignee)
+	tx, meta = Utils.Paginate(tx, c)
 	err = tx.Find(&tasks).Error
 	return
 }
