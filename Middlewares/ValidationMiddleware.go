@@ -8,7 +8,7 @@ import (
 )
 
 // ValidationMiddleware creates a Gin middleware for request validation using field-based rules.
-func ValidationMiddleware(schema []Rules.FieldRules) func(c *gin.Context) {
+func ValidationMiddleware(schema []Rules.FieldRules) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Parse JSON body once and cache in context for reuse by validation rules
 		var jsonBody map[string]interface{}
