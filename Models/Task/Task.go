@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vahidlotfi71/Task_Manager/Models"
 	"github.com/vahidlotfi71/Task_Manager/Utils"
-	Utis "github.com/vahidlotfi71/Task_Manager/Utils"
 	"gorm.io/gorm"
 )
 
@@ -29,7 +28,7 @@ func Paginate(tx *gorm.DB, c *gin.Context) (tasks []Models.Task, meta Utils.Pagi
 	if tx.Statement.Table == "" {
 		tx = tx.Model(&Models.Task{})
 	}
-	tx, meta = Utis.Paginate(tx, c)
+	tx, meta = Utils.Paginate(tx, c)
 	err = tx.Find(&tasks).Error
 	return
 }
