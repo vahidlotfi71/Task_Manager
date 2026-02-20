@@ -8,21 +8,19 @@ import (
 
 // the maximum required length for the field value
 func MaxLength(min uint) ValidationRule {
-	return func(c *gin.Context, field_name string) (passed bool, message string, err error) {
-		var jsonBody map[string]interface{}
+	return func(c *gin.Context, field_name string) (bool, string, error) {
+		// Read cached JSON body from context
+		body, _ := c.Get("json_body")
+		jsonBody := body.(map[string]interface{})
 
-		// Parse JSON body into a map for dynamic field access
-		if err := c.ShouldBindJSON(&jsonBody); err != nil {
-			return false, "", fmt.Errorf("failed to parse JSON body: %w", err)
-		}
-
+		// Get field value from parsed body
 		value := jsonBody[field_name]
+
 		// Convert value to string and check minimum length
 		str := fmt.Sprintf("%v", value)
 		if len(str) > int(min) {
-			return false, fmt.Sprintf("The %s field must be at least %d characters long", field_name, min), nil
+			return false, fmt.Sprintf("The %s field must be maximum %d characters long", field_name, min), nil
 		}
-
 		return true, "", nil
 	}
 }
