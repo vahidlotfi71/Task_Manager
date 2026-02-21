@@ -1,5 +1,4 @@
-// File: Resources/TaskResource/TaskResource.go
-package Resource
+package Resources
 
 import (
 	"github.com/vahidlotfi71/Task_Manager/Models"
