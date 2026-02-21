@@ -18,7 +18,7 @@ func Store() gin.HandlerFunc {
 		},
 		{
 			FieldName: "status",
-			Rules:     []Rules.ValidationRule{Rules.InEnum([]string{"done", "in_pending", "pending"})},
+			Rules:     []Rules.ValidationRule{Rules.InEnum([]string{"done", "in_progress", "pending"})},
 		},
 		{
 			FieldName: "assignee",

@@ -7,7 +7,7 @@ import (
 )
 
 // the maximum required length for the field value
-func MaxLength(min uint) ValidationRule {
+func MaxLength(max uint) ValidationRule {
 	return func(c *gin.Context, field_name string) (bool, string, error) {
 		// Read cached JSON body from context
 		body, _ := c.Get("json_body")
@@ -18,7 +18,7 @@ func MaxLength(min uint) ValidationRule {
 
 		// Convert value to string and check minimum length
 		str := fmt.Sprintf("%v", value)
-		if len(str) > int(min) {
+		if len(str) > int(max) {
 			return false, fmt.Sprintf("The %s field must be maximum %d characters long", field_name, min), nil
 		}
 		return true, "", nil

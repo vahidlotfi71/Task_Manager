@@ -11,7 +11,7 @@ type TaskStatus string
 // define the possible statuses of task
 const (
 	StatusPending    TaskStatus = "pending"
-	StatusInProgress TaskStatus = "in_pending"
+	StatusInProgress TaskStatus = "in_progress"
 	StatusDone       TaskStatus = "done"
 )
 
