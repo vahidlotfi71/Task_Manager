@@ -19,7 +19,7 @@ func MaxLength(max uint) ValidationRule {
 		// Convert value to string and check minimum length
 		str := fmt.Sprintf("%v", value)
 		if len(str) > int(max) {
-			return false, fmt.Sprintf("The %s field must be maximum %d characters long", field_name, min), nil
+			return false, fmt.Sprintf("The %s field must be maximum %d characters long", field_name, max), nil
 		}
 		return true, "", nil
 	}

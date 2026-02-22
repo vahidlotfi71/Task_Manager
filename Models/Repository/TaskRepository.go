@@ -1,8 +1,7 @@
-package Task
+package Repository
 
 import (
 	"errors"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vahidlotfi71/Task_Manager/Models"
@@ -32,8 +31,9 @@ func Paginate(tx *gorm.DB, c *gin.Context) (tasks []Models.Task, meta Utils.Pagi
 	err = tx.Find(&tasks).Error
 	return
 }
+
 func FindByID(tx *gorm.DB, id int64) (task Models.Task, err error) {
-	err = tx.Where("deleted_at IS NULL").First(&task, id).Error
+	err = tx.First(&task, id).Error
 	return
 }
 
@@ -62,27 +62,35 @@ func Create(tx *gorm.DB, dto TaskCreateDTO) (task Models.Task, err error) {
 		Description: dto.Description,
 		Status:      status,
 		Assignee:    dto.Assignee,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		// CreatedAt and UpdatedAt are managed automatically by GORM
 	}
 	err = tx.Create(&task).Error
 	return
 }
 
 func Update(tx *gorm.DB, id int64, dto TaskUpdateDTO) error {
-	updates := map[string]interface{}{
-		"title":       dto.Title,
-		"description": dto.Description,
-		"assignee":    dto.Assignee,
-		"updated_at":  time.Now(),
-	}
+	updates := map[string]interface{}{}
 
+	if dto.Title != "" {
+		updates["title"] = dto.Title
+	}
+	if dto.Description != "" {
+		updates["description"] = dto.Description
+	}
+	if dto.Assignee != "" {
+		updates["assignee"] = dto.Assignee
+	}
 	if dto.Status != "" {
 		updates["status"] = dto.Status
 	}
 
+	if len(updates) == 0 {
+		return errors.New("no fields provided to update")
+	}
+
 	result := tx.Model(&Models.Task{}).
-		Where("id = ? AND deleted_at IS NULL", id).Updates(updates)
+		Where("id = ?", id).
+		Updates(updates)
 
 	if result.Error != nil {
 		return result.Error
@@ -94,7 +102,8 @@ func Update(tx *gorm.DB, id int64, dto TaskUpdateDTO) error {
 }
 
 func SoftDelete(tx *gorm.DB, id int64) error {
-	result := tx.Model(&Models.Task{}).Where("id = ? AND deleted_at IS NULL", id).Update("deleted_at", time.Now())
+	// Use GORM's built-in Delete which respects gorm.DeletedAt (soft delete)
+	result := tx.Where("id = ?", id).Delete(&Models.Task{})
 
 	if result.Error != nil {
 		return result.Error
@@ -103,4 +112,27 @@ func SoftDelete(tx *gorm.DB, id int64) error {
 		return errors.New("task not found or already deleted")
 	}
 	return nil
+}
+
+
+
+func Restore(tx *gorm.DB, id int64) error {
+	result := tx.Unscoped().
+		Model(&Models.Task{}).
+		Where("id = ? AND deleted_at IS NOT NULL", id).
+		Update("deleted_at", nil)
+
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("task not found in trash")
+	}
+	return nil
+}
+
+func ClearTrash(tx *gorm.DB) error {
+	return tx.Unscoped().
+		Where("deleted_at IS NOT NULL").
+		Delete(&Models.Task{}).Error
 }

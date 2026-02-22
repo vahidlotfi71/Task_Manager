@@ -1,4 +1,3 @@
-// File: Routes/Routes.go
 package Routes
 
 import (
@@ -9,7 +8,6 @@ import (
 
 func SetupRoutes(r *gin.Engine) {
 
-	// ---------- TASK GROUP ----------
 	task := r.Group("/task")
 
 	task.GET("/", Controller.Index)                                  // task.index
@@ -21,12 +19,10 @@ func SetupRoutes(r *gin.Engine) {
 	task.GET("/trash", Controller.Trash)                             // task.trash
 	task.POST("/clear-trash", Controller.ClearTrash)                 // task.clear-trash
 
-	// فیلتر بر اساس Status
 	task.GET("/filter/status/:status", Controller.FilterByStatus)
 
-	// فیلتر بر اساس Assignee
 	task.GET("/filter/assignee/:assignee", Controller.FilterByAssignee)
-	// ---------- 404 HANDLER ----------
+	// 404 HANDLER
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"message": "Route Not Found"})
 	})

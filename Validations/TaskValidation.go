@@ -1,4 +1,4 @@
-package TaskValidation
+package Validation
 
 import (
 	"github.com/gin-gonic/gin"
@@ -39,7 +39,7 @@ func Update() gin.HandlerFunc {
 		},
 		{
 			FieldName: "status",
-			Rules:     []Rules.ValidationRule{Rules.Optional(), Rules.InEnum([]string{"done", "in_pending", "pending"})},
+			Rules:     []Rules.ValidationRule{Rules.Optional(), Rules.InEnum([]string{"done", "in_progress", "pending"})},
 		},
 		{
 			FieldName: "assignee",
