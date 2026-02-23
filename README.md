@@ -1,6 +1,6 @@
 # Task Manager REST API
 
-A production-ready Task Management API built with Go (Gin), PostgreSQL, Redis, and Prometheus.
+A production-ready Task Management API built with Go (Gin), PostgreSQL.
 
 ## Features
 - **RESTful CRUD** for Tasks with Soft Delete & Restore.
